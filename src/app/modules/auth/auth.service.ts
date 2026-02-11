@@ -1,3 +1,4 @@
+import { UserStatus } from "../../../generated/prisma/enums";
 import { auth } from "../../lib/auth";
 
 interface IRegisterPatient {
@@ -24,6 +25,30 @@ const registerPatient = async (payload: IRegisterPatient) => {
   return result;
 };
 
+// ! login user
+const loginUser = async (payload: IRegisterPatient) => {
+  const { email, password } = payload;
+  const result = await auth.api.signInEmail({
+    body: {
+      email,
+      password,
+    },
+  });
+
+  if (!result.user) {
+    throw new Error("Failed to create user");
+  }
+
+  if (result.user.status === UserStatus.INACTIVE) {
+    throw new Error("User is inactive");
+  }
+  if (result.user.isDeleted || result.user.status === UserStatus.DELETED) {
+    throw new Error("User is deleted");
+  }
+  return result.user;
+};
+
 export const AuthService = {
   registerPatient,
+  loginUser,
 };
