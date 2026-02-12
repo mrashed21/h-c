@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { config } from "../../config/config";
 import { UserRole, UserStatus } from "../../generated/prisma/enums";
 import { prisma } from "./prisma";
 
@@ -39,7 +40,7 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: [process.env.BETTER_AUTH_URL! || "http://localhost:5000"],
+  trustedOrigins: [config.BETTER_AUTH_URL! || "http://localhost:5000"],
   advanced: {
     disableCSRFCheck: true,
   },

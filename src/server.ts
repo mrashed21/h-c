@@ -1,10 +1,11 @@
 import app from "./app";
+import { config } from "./config/config";
 
 const server = () => {
   try {
-    app.listen(process.env.PORT || 5000, () => {
+    app.listen(config.PORT, () => {
       console.log(
-        `Server is running on http://localhost:${process.env.PORT || 5000}`,
+        `Server is running on http://localhost:${config.PORT}`,
       );
     });
   } catch (error) {
