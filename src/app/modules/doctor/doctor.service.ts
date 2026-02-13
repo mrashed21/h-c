@@ -128,6 +128,29 @@ const createDoctor = async (payload: ICreateDoctor) => {
   }
 };
 
+// need a json data for create  a doctor form post man
+
+/*
+{
+  "doctor": {
+    "name": "Dr. John Doe",
+    "email": "[EMAIL_ADDRESS]",
+    "phone": "1234567890",
+    "address": "123 Main St",
+    "specialty": "Cardiology",
+    "experience": "10 years",
+    "qualification": "MBBS",
+    "gender": "Male",
+    "appointmentFee": 100,
+    "currentWorkingPlace": "City Hospital",
+    "designation": "Cardiologist",
+    "profilePhoto": "https://example.com/doctor.jpg"
+  },
+  "passsword": "password",
+  "specialties": ["1", "2", "3"]
+}
+*/
+
 export const DoctorService = {
   createDoctor,
 };

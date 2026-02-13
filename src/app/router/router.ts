@@ -13,4 +13,5 @@ router.use("/specialties", SpecialtyRouter);
 //! doctor router
 router.use("/doctor", DoctorRouter);
 
+
 export default router;
