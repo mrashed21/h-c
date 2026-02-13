@@ -1,7 +1,11 @@
-import { Specialty, UserRole } from "../../../generated/prisma/client";
+import {
+  Specialty,
+  UserRole,
+  UserStatus,
+} from "../../../generated/prisma/client";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
-import { ICreateDoctor } from "./doctor.interface";
+import { ICreateDoctor, IUpdateDoctor } from "./doctor.interface";
 
 // !create doctor
 const createDoctor = async (payload: ICreateDoctor) => {
@@ -128,29 +132,185 @@ const createDoctor = async (payload: ICreateDoctor) => {
   }
 };
 
-// need a json data for create  a doctor form post man
+//! get all doctor
+const getAllDoctor = async () => {
+  const doctor = await prisma.doctor.findMany({
+    where: {
+      user: {
+        isDeleted: false,
+        status: UserStatus.ACTIVE,
+      },
+    },
+    select: {
+      id: true,
+      userId: true,
+      name: true,
+      email: true,
+      profilePhoto: true,
+      contactNumber: true,
+      address: true,
+      registrationNumber: true,
+      experience: true,
+      gender: true,
+      appointmentFee: true,
+      qualification: true,
+      currentWorkingPlace: true,
+      designation: true,
+      createdAt: true,
+      updatedAt: true,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          status: true,
+          emailVerified: true,
+          image: true,
+          isDeleted: true,
+          deletedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      specialties: {
+        select: {
+          specialty: true,
+        },
+      },
+    },
+  });
 
-/*
-{
-  "doctor": {
-    "name": "Dr. John Doe",
-    "email": "[EMAIL_ADDRESS]",
-    "phone": "1234567890",
-    "address": "123 Main St",
-    "specialty": "Cardiology",
-    "experience": "10 years",
-    "qualification": "MBBS",
-    "gender": "Male",
-    "appointmentFee": 100,
-    "currentWorkingPlace": "City Hospital",
-    "designation": "Cardiologist",
-    "profilePhoto": "https://example.com/doctor.jpg"
-  },
-  "passsword": "password",
-  "specialties": ["1", "2", "3"]
-}
-*/
+  return doctor;
+};
 
+//! get doctor by id
+const getDoctorById = async (id: string) => {
+  const doctor = await prisma.doctor.findUnique({
+    where: {
+      id,
+      user: {
+        isDeleted: false,
+        status: UserStatus.ACTIVE,
+      },
+    },
+    select: {
+      id: true,
+      userId: true,
+      name: true,
+      email: true,
+      profilePhoto: true,
+      contactNumber: true,
+      address: true,
+      registrationNumber: true,
+      experience: true,
+      gender: true,
+      appointmentFee: true,
+      qualification: true,
+      currentWorkingPlace: true,
+      designation: true,
+      createdAt: true,
+      updatedAt: true,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          status: true,
+          emailVerified: true,
+          image: true,
+          isDeleted: true,
+          deletedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      specialties: {
+        select: {
+          specialty: true,
+        },
+      },
+    },
+  });
+
+  return doctor;
+};
+
+//! update doctor also update specialties feilds
+const updateDoctor = async (id: string, payload: IUpdateDoctor) => {
+  const doctor = await prisma.doctor.findUnique({
+    where: { id },
+  });
+
+  if (!doctor) {
+    throw new Error("Doctor not found");
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    const updatedDoctor = await tx.doctor.update({
+      where: { id },
+      data: payload.doctor,
+    });
+
+    if (payload.specialties && payload.specialties.length > 0) {
+      await tx.doctorSpecialty.deleteMany({
+        where: { doctorId: id },
+      });
+
+      const validSpecialties = await tx.specialty.findMany({
+        where: {
+          id: { in: payload.specialties },
+        },
+        select: { id: true },
+      });
+
+      if (validSpecialties.length !== payload.specialties.length) {
+        throw new Error("One or more specialties not found");
+      }
+
+      await tx.doctorSpecialty.createMany({
+        data: payload.specialties.map((specialtyId) => ({
+          doctorId: id,
+          specialtyId,
+        })),
+      });
+    }
+
+    return updatedDoctor;
+  });
+
+  return result;
+};
+
+// !delete doctor
+const deleteDoctor = async (id: string) => {
+  const doctor = await prisma.doctor.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!doctor) {
+    throw new Error("Doctor not found");
+  }
+
+  const result = await prisma.user.update({
+    where: {
+      id: doctor.userId,
+    },
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
+  });
+
+  return result;
+};
 export const DoctorService = {
   createDoctor,
+  getAllDoctor,
+  getDoctorById,
+  updateDoctor,
+  deleteDoctor,
 };
