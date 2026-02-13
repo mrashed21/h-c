@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { validateRequest } from "../../middleware/validate-request";
 import { DoctorController } from "./doctor.controller";
+import { updateDoctorZodSchema } from "./doctor.validate";
 
 const router = Router();
 
@@ -10,7 +12,11 @@ router.get("/", DoctorController.getAllDoctor);
 router.get("/:id", DoctorController.getDoctorById);
 
 // ! update doctor
-router.patch("/:id", DoctorController.updateDoctor);
+router.patch(
+  "/:id",
+  validateRequest(updateDoctorZodSchema),
+  DoctorController.updateDoctor,
+);
 
 // ! delete doctor
 router.put("/:id", DoctorController.deleteDoctor);
