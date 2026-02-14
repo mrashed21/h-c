@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+import status from "http-status";
+import AppError from "../errorHelper/app-error";
 dotenv.config();
 
 interface IConfig {
@@ -19,7 +21,10 @@ const requiredEnv = [
 
 requiredEnv.forEach((variable) => {
   if (!process.env[variable]) {
-    throw new Error(`Missing required environment variable: ${variable}`);
+    throw new AppError(
+      status.INTERNAL_SERVER_ERROR,
+      `Missing required environment variable: ${variable}`,
+    );
   }
 });
 

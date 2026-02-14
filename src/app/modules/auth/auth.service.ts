@@ -1,3 +1,5 @@
+import status from "http-status";
+import AppError from "../../../errorHelper/app-error";
 import { UserStatus } from "../../../generated/prisma/enums";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
@@ -20,7 +22,7 @@ const registerPatient = async (payload: IRegisterPatient) => {
   });
 
   if (!result.user) {
-    throw new Error("Failed to create user");
+    throw new AppError(status.BAD_REQUEST, "Failed to create user");
   }
 
   try {
@@ -90,14 +92,14 @@ const loginUser = async (payload: IRegisterPatient) => {
   });
 
   if (!result.user) {
-    throw new Error("Failed to create user");
+    throw new AppError(status.BAD_REQUEST, "Failed to create user");
   }
 
   if (result.user.status === UserStatus.INACTIVE) {
-    throw new Error("User is inactive");
+    throw new AppError(status.BAD_REQUEST, "User is inactive");
   }
   if (result.user.isDeleted || result.user.status === UserStatus.DELETED) {
-    throw new Error("User is deleted");
+    throw new AppError(status.BAD_REQUEST, "User is deleted");
   }
   return result.user;
 };

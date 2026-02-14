@@ -9,4 +9,5 @@ export interface TGenericErrorResponse {
   errorSource: TErrorSource[];
   error: any;
   statusCode?: number;
+  stack?: string;
 }

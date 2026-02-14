@@ -1,3 +1,5 @@
+import status from "http-status";
+import AppError from "../../../errorHelper/app-error";
 import {
   Specialty,
   UserRole,
@@ -19,7 +21,7 @@ const createDoctor = async (payload: ICreateDoctor) => {
     });
 
     if (!specialty) {
-      throw new Error("Specialty not found");
+      throw new AppError(status.BAD_REQUEST, "Specialty not found");
     }
 
     specialties.push(specialty);
@@ -34,7 +36,7 @@ const createDoctor = async (payload: ICreateDoctor) => {
   });
 
   if (user) {
-    throw new Error("Doctor already exists");
+    throw new AppError(status.BAD_REQUEST, "Doctor already exists");
   }
 
   // ! create doctor
@@ -128,7 +130,7 @@ const createDoctor = async (payload: ICreateDoctor) => {
         id: doctorData.user.id,
       },
     });
-    throw new Error("Failed to create doctor");
+    throw new AppError(status.BAD_REQUEST, "Failed to create doctor");
   }
 };
 
@@ -244,7 +246,7 @@ const updateDoctor = async (id: string, payload: IUpdateDoctor) => {
   });
 
   if (!doctor) {
-    throw new Error("Doctor not found");
+    throw new AppError(status.BAD_REQUEST, "Doctor not found");
   }
 
   const result = await prisma.$transaction(async (tx) => {
@@ -266,7 +268,10 @@ const updateDoctor = async (id: string, payload: IUpdateDoctor) => {
       });
 
       if (validSpecialties.length !== payload.specialties.length) {
-        throw new Error("One or more specialties not found");
+        throw new AppError(
+          status.BAD_REQUEST,
+          "One or more specialties not found",
+        );
       }
 
       await tx.doctorSpecialty.createMany({
@@ -292,7 +297,7 @@ const deleteDoctor = async (id: string) => {
   });
 
   if (!doctor) {
-    throw new Error("Doctor not found");
+    throw new AppError(status.BAD_REQUEST, "Doctor not found");
   }
 
   const result = await prisma.user.update({

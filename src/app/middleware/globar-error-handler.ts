@@ -21,6 +21,7 @@ export const globarErrorHandler = (
   let errorSource: TErrorSource[] = [];
   let message: string = "Internal server error";
   let statusCode: number = status.INTERNAL_SERVER_ERROR;
+  let stack = err.stack;
 
   if (err instanceof z.ZodError) {
     const errorResponse = handleZodError(err);
@@ -37,6 +38,10 @@ export const globarErrorHandler = (
         message: issue.message,
       };
     });
+  } else if (err instanceof Error) {
+    statusCode = status.INTERNAL_SERVER_ERROR;
+    message = err.message;
+    stack = err.stack;
   }
 
   const errorResponse: TGenericErrorResponse = {
@@ -45,6 +50,7 @@ export const globarErrorHandler = (
     message: message,
     errorSource,
     error: config.NODE_ENV === "development" ? err : null,
+    stack: config.NODE_ENV === "development" ? stack : null,
   };
   res.status(statusCode).json(errorResponse);
 };
