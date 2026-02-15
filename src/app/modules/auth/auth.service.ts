@@ -1,6 +1,7 @@
 import status from "http-status";
 import AppError from "../../../errorHelper/app-error";
 import { UserStatus } from "../../../generated/prisma/enums";
+import { tokenUtils } from "../../../utils/token";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 
@@ -41,7 +42,33 @@ const registerPatient = async (payload: IRegisterPatient) => {
       };
     });
 
-    return patient;
+    const accessToken = tokenUtils.getAccessToken({
+      id: result.user.id,
+      email: result.user.email,
+      name: result.user.name,
+      role: result.user.role,
+      isDeleted: result.user.isDeleted,
+      status: result.user.status,
+      emailVerified: result.user.emailVerified,
+    });
+
+    const refreshToken = tokenUtils.getRefreshToken({
+      id: result.user.id,
+      email: result.user.email,
+      name: result.user.name,
+      role: result.user.role,
+      isDeleted: result.user.isDeleted,
+      status: result.user.status,
+      emailVerified: result.user.emailVerified,
+    });
+
+    return {
+      ...result.user,
+      patient,
+      accessToken,
+      refreshToken,
+      token: result.token,
+    };
   } catch (error) {
     console.log("Transaction error : ", error);
     await prisma.user.delete({
@@ -52,34 +79,6 @@ const registerPatient = async (payload: IRegisterPatient) => {
     throw error;
   }
 };
-// const registerPatient = async (payload: IRegisterPatient) => {
-//   const { name, email, password } = payload;
-
-//   const result = await auth.api.signUpEmail({
-//     body: {
-//       name,
-//       email,
-//       password,
-//     },
-//   });
-
-//   if (!result.user) {
-//     throw new Error("Failed to create user");
-//   }
-
-//   const patient = await prisma.patient.create({
-//     data: {
-//       userId: result.user.id,
-//       name,
-//       email,
-//     },
-//   });
-
-//   return {
-//     ...result.user,
-//     patient,
-//   };
-// };
 
 // ! login user
 const loginUser = async (payload: IRegisterPatient) => {
@@ -101,7 +100,33 @@ const loginUser = async (payload: IRegisterPatient) => {
   if (result.user.isDeleted || result.user.status === UserStatus.DELETED) {
     throw new AppError(status.BAD_REQUEST, "User is deleted");
   }
-  return result.user;
+
+  const accessToken = tokenUtils.getAccessToken({
+    id: result.user.id,
+    email: result.user.email,
+    name: result.user.name,
+    role: result.user.role,
+    isDeleted: result.user.isDeleted,
+    status: result.user.status,
+    emailVerified: result.user.emailVerified,
+  });
+
+  const refreshToken = tokenUtils.getRefreshToken({
+    id: result.user.id,
+    email: result.user.email,
+    name: result.user.name,
+    role: result.user.role,
+    isDeleted: result.user.isDeleted,
+    status: result.user.status,
+    emailVerified: result.user.emailVerified,
+  });
+
+  return {
+    ...result.user,
+    token: result.token,
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const AuthService = {

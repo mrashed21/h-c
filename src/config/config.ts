@@ -11,8 +11,6 @@ interface IConfig {
   BETTER_AUTH_SECRET: string;
   ACCESS_TOKEN_SECRET: string;
   REFRESH_TOKEN_SECRET: string;
-  ACCESS_TOKEN_EXPIRES_IN: string;
-  REFRESH_TOKEN_EXPIRES_IN: string;
 }
 
 const requiredEnv = [
@@ -23,8 +21,6 @@ const requiredEnv = [
   "BETTER_AUTH_SECRET",
   "ACCESS_TOKEN_SECRET",
   "REFRESH_TOKEN_SECRET",
-  "ACCESS_TOKEN_EXPIRES_IN",
-  "REFRESH_TOKEN_EXPIRES_IN",
 ];
 
 requiredEnv.forEach((variable) => {
@@ -44,6 +40,4 @@ export const config: IConfig = {
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET!,
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET!,
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET!,
-  ACCESS_TOKEN_EXPIRES_IN: process.env.ACCESS_TOKEN_EXPIRES_IN!,
-  REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN!,
 };
