@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { AdminRouter } from "../modules/admin/admin.route";
 import { AuthRouter } from "../modules/auth/auth.route";
 import { DoctorRouter } from "../modules/doctor/doctor.route";
 import { SpecialtyRouter } from "../modules/specialty/specialty.route";
@@ -13,5 +14,7 @@ router.use("/specialties", SpecialtyRouter);
 //! doctor router
 router.use("/doctor", DoctorRouter);
 
+// ! admin router
+router.use("/admin", AdminRouter);
 
 export default router;
