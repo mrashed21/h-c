@@ -1,9 +1,9 @@
 import status from "http-status";
-import AppError from "../../../errorHelper/app-error";
 import { UserStatus } from "../../../generated/prisma/enums";
-import { tokenUtils } from "../../../utils/token";
+import AppError from "../../errorHelper/app-error";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { tokenUtils } from "../../utils/token";
 
 interface IRegisterPatient {
   name: string;

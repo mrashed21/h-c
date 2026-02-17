@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import status from "http-status";
 import z from "zod";
-import { config } from "../../config/config";
-import AppError from "../../errorHelper/app-error";
-import { handleZodError } from "../../errorHelper/error-helper";
+import { config } from "../config/config";
+import AppError from "../errorHelper/app-error";
+import { handleZodError } from "../errorHelper/error-helper";
 import {
   TErrorSource,
   TGenericErrorResponse,

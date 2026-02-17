@@ -1,5 +1,4 @@
 import status from "http-status";
-import AppError from "../../../errorHelper/app-error";
 import {
   Specialty,
   UserRole,
@@ -8,6 +7,7 @@ import {
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { ICreateDoctor, IUpdateDoctor } from "./doctor.interface";
+import AppError from "../../errorHelper/app-error";
 
 // !create doctor
 const createDoctor = async (payload: ICreateDoctor) => {

@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import status from "http-status";
-import { config } from "../../config/config";
 import { UserRole, UserStatus } from "../../generated/prisma/enums";
+import { config } from "../config/config";
 
-import AppError from "../../errorHelper/app-error";
-import { cookieUtils } from "../../utils/cookie";
-import { IJwtPayload, jwtUtils } from "../../utils/jwt";
+import AppError from "../errorHelper/app-error";
 import { prisma } from "../lib/prisma";
+import { cookieUtils } from "../utils/cookie";
+import { IJwtPayload, jwtUtils } from "../utils/jwt";
 
 const checkAuth =
   (...roles: UserRole[]) =>

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import status from "http-status";
-import { tokenUtils } from "../../../utils/token";
 import { catchAsync } from "../../shared/catch-async";
 import { sendResponse } from "../../shared/send-response";
+import { tokenUtils } from "../../utils/token";
 import { AuthService } from "./auth.service";
 
 //! register patient
