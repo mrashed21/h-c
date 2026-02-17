@@ -9,20 +9,25 @@ model Doctor {
     deletedAt     DateTime?
 
     registrationNumber  String?
-    experience          Int               @default(0)
+    experience          Int     @default(0)
     gender              Gender
-    appointmentFee      Float             @default(0)
+    appointmentFee      Float   @default(0)
     qualification       String
     currentWorkingPlace String
     designation         String
-    avarageRating       Float             @default(0)
-    totalRating         Int               @default(0)
+    avarageRating       Float   @default(0)
+    totalRating         Int     @default(0)
     // relations
-    userId              String            @unique
-    user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-    createdAt           DateTime          @default(now())
-    updatedAt           DateTime          @updatedAt
-    specialties         DoctorSpecialty[]
+    userId              String  @unique
+    user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    specialties     DoctorSpecialty[]
+    appointments    Appointment[]
+    prescriptions   Prescription[]
+    reviews         Review[]
+    doctorSchedules DoctorSchedules[]
 
     @@index([email], name: "doctor_email_idx")
     @@index([isDeleted], name: "doctor_isDeleted_idx")

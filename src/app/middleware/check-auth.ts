@@ -70,6 +70,12 @@ const checkAuth =
           if (roles.length > 0 && !roles.includes(user.role)) {
             throw new AppError(status.FORBIDDEN, "Forbidden access");
           }
+
+          req.user = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+          };
         }
         // return next();
       }
