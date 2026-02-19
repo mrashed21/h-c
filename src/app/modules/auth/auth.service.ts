@@ -7,12 +7,7 @@ import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { jwtUtils } from "../../utils/jwt";
 import { tokenUtils } from "../../utils/token";
-
-interface IRegisterPatient {
-  name: string;
-  email: string;
-  password: string;
-}
+import { IChangePasswordPayload, IRegisterPatient } from "./user.interface";
 
 //! register patient
 const registerPatient = async (payload: IRegisterPatient) => {
@@ -230,9 +225,49 @@ const getNewToken = async (refreshToken: string, sessionToken: string) => {
     sessionToken: token,
   };
 };
+
+// ! change password
+const changePassword = async (
+  payload: IChangePasswordPayload,
+  sessionToken: string,
+) => {
+  const session = await auth.api.getSession({
+    headers: {
+      cookie: `better-auth.session_token=${sessionToken}`,
+    },
+  });
+
+  if (!session) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid session token");
+  }
+
+  const { currentPassword, newPassword } = payload;
+
+  const result = await auth.api.changePassword({
+    body: {
+      currentPassword,
+      newPassword,
+      revokeOtherSessions: true,
+    },
+    headers: {
+      cookie: `better-auth.session_token=${sessionToken}`,
+    },
+  });
+
+  if (session.user.needPasswordChange) {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { needPasswordChange: false },
+    });
+  }
+
+  return result;
+};
+
 export const AuthService = {
   registerPatient,
   loginUser,
   getMe,
   getNewToken,
+  changePassword,
 };

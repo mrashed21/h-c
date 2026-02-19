@@ -55,4 +55,16 @@ router.post(
   AuthController.getNewToken,
 );
 
+// ! change password
+router.post(
+  "/change-password",
+  checkAuth(
+    UserRole.SUPER_ADMIN,
+    UserRole.ADMIN,
+    UserRole.DOCTOR,
+    UserRole.PATIENT,
+  ),
+  AuthController.changePassword,
+);
+
 export const AuthRouter = router;
