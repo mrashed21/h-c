@@ -43,4 +43,16 @@ router.get(
   AuthController.getMe,
 );
 
+// ! get new token
+router.post(
+  "/new-token",
+  checkAuth(
+    UserRole.SUPER_ADMIN,
+    UserRole.ADMIN,
+    UserRole.DOCTOR,
+    UserRole.PATIENT,
+  ),
+  AuthController.getNewToken,
+);
+
 export const AuthRouter = router;

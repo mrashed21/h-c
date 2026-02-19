@@ -74,7 +74,7 @@ const updateAdmin = async (id: string, payload: any) => {
 };
 
 // ! delete admin (soft delete)
-const deleteAdmin = async (id: string) => {
+const deleteAdmin = async (id: string, userId: string) => {
   const admin = await prisma.admin.findUnique({
     where: {
       id,
@@ -85,6 +85,9 @@ const deleteAdmin = async (id: string) => {
     throw new AppError(status.BAD_REQUEST, "Admin not found");
   }
 
+  if (admin.userId === userId) {
+    throw new AppError(status.BAD_REQUEST, "You can not delete yourself");
+  }
   const result = await prisma.admin.update({
     where: {
       id,
