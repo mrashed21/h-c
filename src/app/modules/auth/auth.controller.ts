@@ -92,21 +92,28 @@ const getNewToken = catchAsync(async (req: Request, res: Response) => {
 });
 
 // ! change password
-// const changePassword = catchAsync(async (req: Request, res: Response) => {
-//   const result = await AuthService.changePassword(req.body, req.headers);
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  const betterAuthSessionToken = req.cookies["better-auth.session_token"];
 
-//   const { accessToken, refreshToken } = result;
+  const result = await AuthService.changePassword(
+    payload,
+    betterAuthSessionToken,
+  );
 
-//   tokenUtils.createAccessTokenAndSetCookie(res, accessToken);
-//   tokenUtils.createRefreshTokenAndSetCookie(res, refreshToken);
+  const { accessToken, refreshToken, token } = result;
 
-//   sendResponse(res, {
-//     statusCode: status.OK,
-//     success: true,
-//     message: "Password changed successfully",
-//     data: result,
-//   });
-// });
+  tokenUtils.createAccessTokenAndSetCookie(res, accessToken);
+  tokenUtils.createRefreshTokenAndSetCookie(res, refreshToken);
+  tokenUtils.setBetterAuthCookie(res, token as string);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Password changed successfully",
+    data: result,
+  });
+});
 
 // ! logout user
 const logoutUser = catchAsync(async (req: Request, res: Response) => {
@@ -140,6 +147,6 @@ export const AuthController = {
   loginUser,
   getMe,
   getNewToken,
-  // changePassword,
+  changePassword,
   logoutUser,
 };

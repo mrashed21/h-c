@@ -227,28 +227,70 @@ const getNewToken = async (refreshToken: string, sessionToken: string) => {
 };
 
 // ! change password
-// const changePassword = async (
-//   payload: IChangePasswordPayload,
-//   headers: any,
-// ) => {
-//   const session = await auth.api.getSession({ headers });
+const changePassword = async (
+  payload: IChangePasswordPayload,
+  sessionToken: string,
+) => {
+  const session = await auth.api.getSession({
+    headers: new Headers({
+      Authorization: `Bearer ${sessionToken}`,
+    }),
+  });
 
-//   if (!session) {
-//     throw new AppError(status.UNAUTHORIZED, "Invalid session token");
-//   }
+  if (!session) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid session token");
+  }
 
-//   const result = await auth.api.changePassword({
-//     body: {
-//       currentPassword: payload.currentPassword,
-//       newPassword: payload.newPassword,
-//       revokeOtherSessions: true,
-//     },
-//     headers,
-//   });
+  const { currentPassword, newPassword } = payload;
 
-//   return result;
-// };
+  const result = await auth.api.changePassword({
+    body: {
+      currentPassword,
+      newPassword,
+      revokeOtherSessions: true,
+    },
+    headers: new Headers({
+      Authorization: `Bearer ${sessionToken}`,
+    }),
+  });
 
+  if (session.user.needPasswordChange) {
+    await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        needPasswordChange: false,
+      },
+    });
+  }
+
+  const accessToken = tokenUtils.getAccessToken({
+    userId: session.user.id,
+    role: session.user.role,
+    name: session.user.name,
+    email: session.user.email,
+    status: session.user.status,
+    isDeleted: session.user.isDeleted,
+    emailVerified: session.user.emailVerified,
+  });
+
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: session.user.id,
+    role: session.user.role,
+    name: session.user.name,
+    email: session.user.email,
+    status: session.user.status,
+    isDeleted: session.user.isDeleted,
+    emailVerified: session.user.emailVerified,
+  });
+
+  return {
+    ...result,
+    accessToken,
+    refreshToken,
+  };
+};
 // ! logout user
 const logoutUser = async (sessionToken: string) => {
   const result = await auth.api.signOut({
@@ -263,6 +305,6 @@ export const AuthService = {
   loginUser,
   getMe,
   getNewToken,
-  // changePassword,
+  changePassword,
   logoutUser,
 };

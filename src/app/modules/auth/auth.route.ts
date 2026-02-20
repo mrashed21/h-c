@@ -56,16 +56,16 @@ router.post(
 );
 
 // ! change password
-// router.post(
-//   "/change-password",
-//   checkAuth(
-//     UserRole.SUPER_ADMIN,
-//     UserRole.ADMIN,
-//     UserRole.DOCTOR,
-//     UserRole.PATIENT,
-//   ),
-//   AuthController.changePassword,
-// );
+router.post(
+  "/change-password",
+  checkAuth(
+    UserRole.SUPER_ADMIN,
+    UserRole.ADMIN,
+    UserRole.DOCTOR,
+    UserRole.PATIENT,
+  ),
+  AuthController.changePassword,
+);
 
 // ! logout user
 router.post(
