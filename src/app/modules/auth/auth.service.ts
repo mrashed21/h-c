@@ -227,47 +227,42 @@ const getNewToken = async (refreshToken: string, sessionToken: string) => {
 };
 
 // ! change password
-const changePassword = async (
-  payload: IChangePasswordPayload,
-  sessionToken: string,
-) => {
-  const session = await auth.api.getSession({
-    headers: {
-      cookie: `better-auth.session_token=${sessionToken}`,
-    },
+// const changePassword = async (
+//   payload: IChangePasswordPayload,
+//   headers: any,
+// ) => {
+//   const session = await auth.api.getSession({ headers });
+
+//   if (!session) {
+//     throw new AppError(status.UNAUTHORIZED, "Invalid session token");
+//   }
+
+//   const result = await auth.api.changePassword({
+//     body: {
+//       currentPassword: payload.currentPassword,
+//       newPassword: payload.newPassword,
+//       revokeOtherSessions: true,
+//     },
+//     headers,
+//   });
+
+//   return result;
+// };
+
+// ! logout user
+const logoutUser = async (sessionToken: string) => {
+  const result = await auth.api.signOut({
+    headers: new Headers({
+      Authorization: `Bearer ${sessionToken}`,
+    }),
   });
-
-  if (!session) {
-    throw new AppError(status.UNAUTHORIZED, "Invalid session token");
-  }
-
-  const { currentPassword, newPassword } = payload;
-
-  const result = await auth.api.changePassword({
-    body: {
-      currentPassword,
-      newPassword,
-      revokeOtherSessions: true,
-    },
-    headers: {
-      cookie: `better-auth.session_token=${sessionToken}`,
-    },
-  });
-
-  if (session.user.needPasswordChange) {
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: { needPasswordChange: false },
-    });
-  }
-
   return result;
 };
-
 export const AuthService = {
   registerPatient,
   loginUser,
   getMe,
   getNewToken,
-  changePassword,
+  // changePassword,
+  logoutUser,
 };

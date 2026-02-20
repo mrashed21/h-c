@@ -56,15 +56,27 @@ router.post(
 );
 
 // ! change password
+// router.post(
+//   "/change-password",
+//   checkAuth(
+//     UserRole.SUPER_ADMIN,
+//     UserRole.ADMIN,
+//     UserRole.DOCTOR,
+//     UserRole.PATIENT,
+//   ),
+//   AuthController.changePassword,
+// );
+
+// ! logout user
 router.post(
-  "/change-password",
+  "/logout",
   checkAuth(
     UserRole.SUPER_ADMIN,
     UserRole.ADMIN,
     UserRole.DOCTOR,
     UserRole.PATIENT,
   ),
-  AuthController.changePassword,
+  AuthController.logoutUser,
 );
 
 export const AuthRouter = router;
