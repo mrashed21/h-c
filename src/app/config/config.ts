@@ -20,6 +20,9 @@ interface IConfig {
   GOOGLE_CLIENT_SECRET: string;
   GOOGLE_CALLBACK_URL: string;
   FRONTEND_URL: string;
+  CLOUDINARY_CLOUD_NAME: string;
+  CLOUDINARY_API_KEY: string;
+  CLOUDINARY_API_SECRET: string;
 }
 
 const requiredEnv = [
@@ -39,6 +42,9 @@ const requiredEnv = [
   "GOOGLE_CLIENT_SECRET",
   "GOOGLE_CALLBACK_URL",
   "FRONTEND_URL",
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
 ];
 
 requiredEnv.forEach((variable) => {
@@ -67,4 +73,7 @@ export const config: IConfig = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET!,
   GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL!,
   FRONTEND_URL: process.env.FRONTEND_URL!,
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME!,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY!,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET!,
 };
