@@ -79,4 +79,7 @@ router.post(
   AuthController.logoutUser,
 );
 
+// ! verify email
+router.post("/verify-email", AuthController.verifyEmail);
+
 export const AuthRouter = router;
