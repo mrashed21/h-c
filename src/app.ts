@@ -1,20 +1,32 @@
+import { toNodeHandler } from "better-auth/node";
 import cookieParser from "cookie-parser";
 import express, { Application, Request, Response } from "express";
+import path from "node:path";
+import { auth } from "./app/lib/auth";
 import { globarErrorHandler } from "./app/middleware/globar-error-handler";
 import { notFound } from "./app/middleware/not-found";
 import router from "./app/router/router";
 const app: Application = express();
 
-// Enable URL-encoded form data parsing
+// app.set("query parser", (str: string) => qs.parse(str));
+
+app.set("view engine", "ejs");
+app.set("views", path.resolve(process.cwd(), `src/app/templates`));
+
+//! Mount the auth routes using better-auth's toNodeHandler
+app.use("/api/auth", toNodeHandler(auth));
+
+//! Enable URL-encoded form data parsing
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware to parse JSON bodies
+//! Middleware to parse JSON bodies
 app.use(express.json());
 app.use(cookieParser());
 
+// ! all routes with version
 app.use("/api/v1", router);
 
-// Basic route
+//! Basic route
 app.get("/", async (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
