@@ -82,4 +82,10 @@ router.post(
 // ! verify email
 router.post("/verify-email", AuthController.verifyEmail);
 
+// ! forget password
+router.post("/forget-password", AuthController.forgetPassword);
+
+// ! reset password
+router.post("/reset-password", AuthController.resetPassword);
+
 export const AuthRouter = router;
