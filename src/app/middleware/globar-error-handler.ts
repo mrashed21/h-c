@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import status from "http-status";
 import z from "zod";
+import { deleteFileFromCloudinary } from "../config/cloudinary.config";
 import { config } from "../config/config";
 import AppError from "../errorHelper/app-error";
 import { handleZodError } from "../errorHelper/error-helper";
@@ -9,7 +10,7 @@ import {
   TGenericErrorResponse,
 } from "../interface/error.interface";
 
-export const globarErrorHandler = (
+export const globarErrorHandler = async (
   err: any,
   req: Request,
   res: Response,
@@ -17,6 +18,15 @@ export const globarErrorHandler = (
 ) => {
   if (config.NODE_ENV === "development") {
     console.log("error form glober error handler", err);
+  }
+
+  if (req.file) {
+    await deleteFileFromCloudinary(req.file.path);
+  }
+
+  if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+    const imageUrls = req.files.map((file) => file.path);
+    await Promise.all(imageUrls.map((url) => deleteFileFromCloudinary(url)));
   }
 
   let errorSource: TErrorSource[] = [];

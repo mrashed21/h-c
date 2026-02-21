@@ -28,7 +28,7 @@ const getSpecialtyById = async (id: string): Promise<Specialty | null> => {
 // ! update specialty
 const updateSpecialty = async (
   id: string,
-  payload: Partial<Specialty>
+  payload: Partial<Specialty>,
 ): Promise<Specialty | null> => {
   const result = await prisma.specialty.update({
     where: {
