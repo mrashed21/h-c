@@ -1,28 +1,35 @@
 import { toNodeHandler } from "better-auth/node";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, { Application, Request, Response } from "express";
 import path from "path";
+import qs from "qs";
+import { config } from "./app/config/config";
 import { auth } from "./app/lib/auth";
 import { globarErrorHandler } from "./app/middleware/globar-error-handler";
 import { notFound } from "./app/middleware/not-found";
 import router from "./app/router/router";
-import { config } from "./app/config/config";
-import cors from "cors";
-
 
 const app: Application = express();
 
-// app.set("query parser", (str: string) => qs.parse(str));
+app.set("query parser", (str: string) => qs.parse(str));
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve(process.cwd(), `src/app/templates`));
 
-app.use(cors({
-    origin : [config.FRONTEND_URL, config.BETTER_AUTH_URL, "http://localhost:3000", "http://localhost:5000"],
-    credentials : true,
-    methods : ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders : ["Content-Type", "Authorization"]
-}))
+app.use(
+  cors({
+    origin: [
+      config.FRONTEND_URL,
+      config.BETTER_AUTH_URL,
+      "http://localhost:3000",
+      "http://localhost:5000",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 //! Mount the auth routes using better-auth's toNodeHandler
 app.use("/api/auth", toNodeHandler(auth));

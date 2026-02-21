@@ -5,6 +5,12 @@ interface IResponse<T> {
   success: boolean;
   message: string;
   data?: T | null;
+  meta?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export const sendResponse = <T>(res: Response, responseData: IResponse<T>) => {
@@ -13,5 +19,6 @@ export const sendResponse = <T>(res: Response, responseData: IResponse<T>) => {
     success,
     message,
     data,
+    meta: responseData.meta,
   });
 };

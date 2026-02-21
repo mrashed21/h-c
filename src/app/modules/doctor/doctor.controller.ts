@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import status from "http-status";
+import { IQueryParams } from "../../interface/query.interface";
 import { catchAsync } from "../../shared/catch-async";
 import { sendResponse } from "../../shared/send-response";
 import { DoctorService } from "./doctor.service";
@@ -18,12 +19,14 @@ const createDoctor = catchAsync(async (req: Request, res: Response) => {
 
 // ! get all doctor
 const getAllDoctor = catchAsync(async (req: Request, res: Response) => {
-  const result = await DoctorService.getAllDoctor();
+  const queryParams = req.query as IQueryParams;
+  const result = await DoctorService.getAllDoctor(queryParams);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
     message: "Doctors fetched successfully",
-    data: result,
+    data: result?.data,
+    meta: result?.meta,
   });
 });
 

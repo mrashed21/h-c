@@ -1,13 +1,22 @@
 import status from "http-status";
 import {
+  Doctor,
+  Prisma,
   Specialty,
   UserRole,
   UserStatus,
 } from "../../../generated/prisma/client";
+import AppError from "../../errorHelper/app-error";
+import { IQueryParams } from "../../interface/query.interface";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { QueryBuilder } from "../../utils/query-builder";
+import {
+  doctorFilterableFields,
+  doctorIncludeConfig,
+  doctorSearchableFields,
+} from "./doctor.constant";
 import { ICreateDoctor, IUpdateDoctor } from "./doctor.interface";
-import AppError from "../../errorHelper/app-error";
 
 // !create doctor
 const createDoctor = async (payload: ICreateDoctor) => {
@@ -135,55 +144,87 @@ const createDoctor = async (payload: ICreateDoctor) => {
 };
 
 //! get all doctor
-const getAllDoctor = async () => {
-  const doctor = await prisma.doctor.findMany({
-    where: {
-      user: {
-        isDeleted: false,
-        status: UserStatus.ACTIVE,
-      },
-    },
-    select: {
-      id: true,
-      userId: true,
-      name: true,
-      email: true,
-      profilePhoto: true,
-      contactNumber: true,
-      address: true,
-      registrationNumber: true,
-      experience: true,
-      gender: true,
-      appointmentFee: true,
-      qualification: true,
-      currentWorkingPlace: true,
-      designation: true,
-      createdAt: true,
-      updatedAt: true,
-      user: {
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          status: true,
-          emailVerified: true,
-          image: true,
-          isDeleted: true,
-          deletedAt: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
+const getAllDoctor = async (query: IQueryParams) => {
+  // const doctor = await prisma.doctor.findMany({
+  //   where: {
+  //     user: {
+  //       isDeleted: false,
+  //       status: UserStatus.ACTIVE,
+  //     },
+  //   },
+  //   select: {
+  //     id: true,
+  //     userId: true,
+  //     name: true,
+  //     email: true,
+  //     profilePhoto: true,
+  //     contactNumber: true,
+  //     address: true,
+  //     registrationNumber: true,
+  //     experience: true,
+  //     gender: true,
+  //     appointmentFee: true,
+  //     qualification: true,
+  //     currentWorkingPlace: true,
+  //     designation: true,
+  //     createdAt: true,
+  //     updatedAt: true,
+  //     user: {
+  //       select: {
+  //         id: true,
+  //         email: true,
+  //         name: true,
+  //         role: true,
+  //         status: true,
+  //         emailVerified: true,
+  //         image: true,
+  //         isDeleted: true,
+  //         deletedAt: true,
+  //         createdAt: true,
+  //         updatedAt: true,
+  //       },
+  //     },
+  //     specialties: {
+  //       select: {
+  //         specialty: true,
+  //       },
+  //     },
+  //   },
+  // });
+
+  // return doctor;
+
+  const queryBuilder = new QueryBuilder<
+    Doctor,
+    Prisma.DoctorWhereInput,
+    Prisma.DoctorInclude
+  >(prisma.doctor, query, {
+    searchableFields: doctorSearchableFields,
+    filterableFields: doctorFilterableFields,
+  });
+  const result = await queryBuilder
+    .search()
+    .filter()
+    .where({
+      isDeleted: false,
+    })
+    .include({
+      user: true,
+      // specialties: true,
       specialties: {
-        select: {
+        include: {
           specialty: true,
         },
       },
-    },
-  });
+    })
+    .dynamicInclude(doctorIncludeConfig)
+    .paginate()
+    .sort()
+    .fields()
+    .execute();
 
-  return doctor;
+  console.log(result);
+  return result;
 };
 
 //! get doctor by id
