@@ -1,15 +1,20 @@
 import { Router } from "express";
 import { UserRole } from "../../../generated/prisma/enums";
 import checkAuth from "../../middleware/check-auth";
+import { validateRequest } from "../../middleware/validate-request";
+import { ScheduleController } from "./shedule.controller";
+import { ScheduleValidation } from "./shedules.validation";
 
 const router = Router();
 
+//  ! create schedule
 router.post(
   "/",
   checkAuth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  //   validateRequest(ScheduleValidation.createScheduleZodSchema),
-  //   ScheduleController.createSchedule,
+  validateRequest(ScheduleValidation.createScheduleZodSchema),
+  ScheduleController.createSchedule,
 );
+
 router.get(
   "/",
   checkAuth(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.DOCTOR),
